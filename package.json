@@ -1,0 +1,23 @@
+{
+  "name": "@saidake/lef-install",
+  "version": "1.0.2",
+  "description": "This package provides download service for lef.",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saidake/lef-install.git"
+  },
+  "keywords": [],
+  "author": "saidake@qq.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saidake/lef-install/issues"
+  },
+  "homepage": "https://github.com/saidake/lef-install#readme",
+  "dependencies": {
+    "fs-extra": "^10.0.0"
+  }
+}
