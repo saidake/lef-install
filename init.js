@@ -1,36 +1,61 @@
-const fs = require("fs-extra");
-const path =require("path")
-const process=require("process")
-function init(projectRootDir,projectName,hasYarn,templatePackageName,originalProcessDirectory){
+const fs = require('fs-extra');
+const path = require('path');
+const process = require('process');
+const spawn = require('cross-spawn');
 
-    console.log('hasYarn: ', hasYarn);
+function init(
+  projectRootDir,
+  projectName,
+  hasYarn,
+  templatePackageName,
+  originalProcessDirectory
+) {
+  const currentFiles = fs
+    .readdirSync(projectRootDir)
+    .filter((val) => !/node_modules/.test(val));
+  const templateDir = path.join(
+    projectRootDir,
+    'node_modules/@saidake',
+    templatePackageName,
+    'template'
+  );
 
-    const currentFiles=fs.readdirSync(projectRootDir).filter((val)=>!/node_modules/.test(val))
-    const templateDir=path.join(projectRootDir,'node_modules/@saidake',templatePackageName,"template");
-    
-    const templateFiles=fs.readdirSync(templateDir);
+  const templateFiles = fs.readdirSync(templateDir);
 
-    //empty current dir except node_modules
-    currentFiles.forEach((val)=>{
-        fs.removeSync(path.join(projectRootDir,val))                 
-    })
+  //empty current dir except node_modules
+  currentFiles.forEach((val) => {
+    fs.removeSync(path.join(projectRootDir, val));
+  });
+  // move template files
+  templateFiles.forEach((val) => {
+    fs.moveSync(path.join(templateDir, val), path.join(projectRootDir, val), {
+      overwrite: true
+    });
+  });
 
-    // move template files
-    templateFiles.forEach((val)=>{
-        fs.moveSync(path.join(templateDir,val), path.join(projectRootDir,val), { overwrite: true })
-    })
+  const yarnLockPath = path.join(projectRootDir, 'yarn.lock');
+  const packageLockPath = path.join(projectRootDir, 'package-lock.json');
 
-    const yarnLockPath=path.join(projectRootDir,'yarn.lock');
-    const packageLockPath=path.join(projectRootDir,'package-lock.json');
-    if(hasYarn&&fs.ensureFileSync(yarnLockPath)){
-        fs.removeSync(yarnLockPath)
-    }else if(fs.ensureFileSync(packageLockPath)){
-        fs.removeSync(packageLockPath)
+  if (hasYarn) {
+    fs.removeSync(packageLockPath);
+  } else{
+    fs.removeSync(yarnLockPath);
+  }
+
+  fs.removeSync(path.join(projectRootDir, 'node_modules'));
+  let child;
+  if(hasYarn){
+      process.chdir(projectRootDir);
+    child=spawn("yarn", ['install',"--cwd",projectRootDir,"--ignore-engines"], { stdio: "inherit" });
+  }else{
+    child=spawn("npm", ['install'], { stdio: "inherit" });
+  }
+  child.on("close", (code) => {
+    if (code !== 0) {
+      return;
     }
-
-    fs.removeSync(path.join(projectRootDir,"node_modules"))                 
-    process.exit(1);
+        return;
+  });
 }
 
-
-module.exports=init
+module.exports = init;
