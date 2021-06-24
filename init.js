@@ -15,7 +15,7 @@ function init(
     .filter((val) => !/node_modules/.test(val));
   const templateDir = path.join(
     projectRootDir,
-    'node_modules/@saidake',
+    'node_modules',
     templatePackageName,
     'template'
   );
