@@ -38,13 +38,13 @@ function init(
 
 
 
-  const packageJsonFile=fs.readFileSync(path.join(projectRootDir, 'package.json'), "utf8")
+  const packageJsonFile=fs.readFileSync(path.join(projectRootDir, 'package copy.json'), "utf8")
   
 
   // ===========================================去掉项目模板的lock文件
   const yarnLockPath = path.join(projectRootDir, 'yarn.lock');
   const packageLockPath = path.join(projectRootDir, 'package-lock.json');
-  const lockJsonFile;
+  let lockJsonFile;
 
   if (hasYarn) {
     fs.removeSync(packageLockPath);
@@ -75,20 +75,21 @@ function init(
     JSON.stringify(packageJson, null, 2) + os.EOL
   );
 
+  fs.removeSync(path.join(projectRootDir, "package copy.json"));
   fs.removeSync(path.join(projectRootDir, 'node_modules'));
-  let child;
-  if(hasYarn){
-      process.chdir(projectRootDir);
-    child=spawn("yarn", ['install',"--cwd",projectRootDir,"--ignore-engines"], { stdio: "inherit" });
-  }else{
-    child=spawn("npm", ['install'], { stdio: "inherit" });
-  }
-  child.on("close", (code) => {
-    if (code !== 0) {
-      return;
-    }
-        return;
-  });
+  // let child;
+  // if(hasYarn){
+      // process.chdir(projectRootDir);
+    // child=spawn("yarn", ['install',"--cwd",projectRootDir,"--ignore-engines"], { stdio: "inherit" });
+  // }else{
+    // child=spawn("npm", ['install'], { stdio: "inherit" });
+  // }
+  // child.on("close", (code) => {
+  //   if (code !== 0) {
+  //     return;
+  //   }
+  //       return;
+  // });
 }
 
 
